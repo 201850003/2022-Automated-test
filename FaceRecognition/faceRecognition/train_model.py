@@ -1,15 +1,14 @@
-import keras
-import numpy as np
-from keras import Sequential
-from keras.layers import Activation, MaxPooling2D, Convolution2D, Flatten, Dense
-from keras.saving.experimental.saving_lib import load_model
+from sklearn.svm._libsvm import predict_proba
 
-from faceRecognition.dataSet import DataSet
+from dataSet import DataSet
+from keras.models import Sequential,load_model
+from keras.layers import Dense,Activation,Convolution2D,MaxPooling2D,Flatten,Dropout
+import numpy as np
 
 
 # 建立一个基于CNN的人脸识别模型
 class Model(object):
-    FILE_PATH = "D:\\Local Project\\faceRec\\2022-Automated-test\\FaceRecognition\\model.h5"  # 模型进行存储和读取的地方
+    FILE_PATH = "D:\\2022-Automated-test\\FaceRecognition\\model.keras"  # 模型进行存储和读取的地方
     IMAGE_SIZE = 128  # 模型接受的人脸图片是128*128的
 
     def __init__(self):
@@ -22,7 +21,7 @@ class Model(object):
     # 建立一个CNN模型，一层卷积、一层池化、一层卷积、一层池化、抹平之后进行全链接、最后进行分类
     def build_model(self):
         self.model = Sequential()
-        self.model.add(keras.layers.convolutional.Convolution2D(filters=32, kernel_size=(5, 5), padding='same', input_shape=self.dataset.X_train.shape[1:]))
+        self.model.add(Convolution2D(filters=32, kernel_size=(5, 5), padding='same', input_shape=self.dataset.X_train.shape[1:]))
 
         self.model.add(Activation('relu'))
         self.model.add(
@@ -76,14 +75,14 @@ class Model(object):
         img = img.astype('float32')
         img = img / 255.0
 
-        result = self.model.predict_proba(img)  # 测算一下该img属于某个label的概率
+        result = self.model.predict(img)  # 测算一下该img属于某个label的概率
         max_index = np.argmax(result)  # 找出概率最高的
 
         return max_index, result[0][max_index]  # 第一个 参数为概率最高的label的index,第二个参数为对应概率
 
 
 if __name__ == '__main__':
-    dataset = DataSet("D:\\Local Project\\faceRec\\2022-Automated-test\\FaceRecognition\\pictures\\dataSet")
+    dataset = DataSet("D:\\2022-Automated-test\\FaceRecognition\\pictures")
     model = Model()
     model.read_trainData(dataset)
     model.build_model()

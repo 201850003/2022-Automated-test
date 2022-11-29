@@ -17,7 +17,7 @@ def print_line(delim_char, times, on_top):
     if on_top:
         print(delim_char*times + "\n")
     else:
-        print("\n" + delim_char*times)
+        print(delim_char*times)
 
 
 # 获取测试数据集中所有图片的名称
@@ -65,13 +65,16 @@ def eval_accuracy(test_list, actual_list, prob_list, predict_threshold):
         print_line("=", 20, True)
     else:
         print_line("*", 20, True)
-    print("The accuracy rate is: " + rate + "\n" +
-          "The prediction threshold is: " + predict_threshold + "\n")
+    print("The accuracy rate is: ")
+    print(rate)
+    print("The prediction threshold is: ")
+    print("{:.2f}".format(predict_threshold))
+    print()
 
 
 if __name__ == '__main__':
-    origin_img_path = 'D:\\Local Project\\faceRec\\originDataSet'
-    handle_img_path = 'D:\\Local Project\\faceRec\\2022-Automated-test\\FaceRecognition\\pictures\\dataset'
+    origin_img_path = 'D:\\大三上学期课件\\FaceRecognition\\FaceRecognition\\input\\pins-face-recognition\\105_classes_pins_dataset'
+    handle_img_path = '..\\pictures\\dataSet'
 
     existing_name_list = handle_name_list(origin_img_path)
     actual_res = get_actual_res(existing_name_list, handle_img_path)
