@@ -1,15 +1,15 @@
 import keras
 import numpy as np
 from keras import Sequential
-from keras.layers import Activation, Convolution2D, MaxPooling2D, Flatten, Dense
-from keras.saving.experimental.saving_lib import load_model
+from keras.layers import Activation, MaxPooling2D, Convolution2D, Flatten, Dense
+from tensorflow.python.keras.saving.save import load_model
 
 from faceRecognition.dataSet import DataSet
 
 
 # 建立一个基于CNN的人脸识别模型
 class Model(object):
-    FILE_PATH = "F:\\Python\\FaceRecognition\\model.h5"  # 模型进行存储和读取的地方
+    FILE_PATH = "D:\\Local Project\\faceRec\\2022-Automated-test\\FaceRecognition\\model.h5"  # 模型进行存储和读取的地方
     IMAGE_SIZE = 128  # 模型接受的人脸图片是128*128的
 
     def __init__(self):
@@ -83,7 +83,7 @@ class Model(object):
 
 
 if __name__ == '__main__':
-    dataset = DataSet("F:\\Python\\FaceRecognition\\pictures")
+    dataset = DataSet("D:\\Local Project\\faceRec\\2022-Automated-test\\FaceRecognition\\pictures\\dataSet")
     model = Model()
     model.read_trainData(dataset)
     model.build_model()
