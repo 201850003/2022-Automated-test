@@ -2,7 +2,7 @@ import keras
 import numpy as np
 from keras import Sequential
 from keras.layers import Activation, MaxPooling2D, Convolution2D, Flatten, Dense
-from tensorflow.python.keras.saving.save import load_model
+from keras.saving.experimental.saving_lib import load_model
 
 from faceRecognition.dataSet import DataSet
 
