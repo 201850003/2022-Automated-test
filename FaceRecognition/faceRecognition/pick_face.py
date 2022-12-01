@@ -12,7 +12,7 @@ def readPicSaveFace(sourcePath,objectPath,*suffix):
         #对list中图片逐一进行检查,找出其中的人脸然后写到目标文件夹下
 
         count = 1
-        face_cascade = cv2.CascadeClassifier('E:\openCV\opencv\sources\data\haarcascades\haarcascade_frontalface_alt.xml')
+        face_cascade = cv2.CascadeClassifier('C:\\Users\\Lenovo\\AppData\\Local\\Programs\\Python\\Python39\\Lib\\site-packages\\cv2\\data\\haarcascade_frontalface_alt.xml')
         for i in resultArray:
             if type(i) != str:
 
@@ -35,7 +35,7 @@ def readPicSaveFace(sourcePath,objectPath,*suffix):
         print('Already read '+str(count-1)+' Faces to Destination '+objectPath)
 
 if __name__ == '__main__':
-     readPicSaveFace('D:\myProject\pictures\source-jerry','D:\myProject\pictures\picTest','.jpg','.JPG','png','PNG')
+     readPicSaveFace('E:\\picturecollect\\rawotherpeople','..\\pictures\\otherpeople','.jpg','.JPG','png','PNG')
 
 
 

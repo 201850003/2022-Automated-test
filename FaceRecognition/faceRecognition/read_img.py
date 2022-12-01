@@ -35,7 +35,7 @@ def endwith(s,*endstring):
 
 if __name__ == '__main__':
 
-  result = readAllImg("F:\Python\2022-Automated-test\FaceRecognitionModel\dataset\pins_Bill Gates\Bill Gates0_496",'.pgm')
+  result = readAllImg("E:\picturecollect\archive\lfw-funneled\lfw_funneled",'.pgm')
   print (result[0])
   # cv2.namedWindow("Image")
   # cv2.imshow("Image", result[1])

@@ -1,14 +1,17 @@
+from keras.optimizers import SGD
+from keras.optimizers.optimizer_v1 import adam
 from sklearn.svm._libsvm import predict_proba
 
 from dataSet import DataSet
-from keras.models import Sequential,load_model
+from keras import Sequential
+from keras.models import load_model
 from keras.layers import Dense,Activation,Convolution2D,MaxPooling2D,Flatten,Dropout
 import numpy as np
 
 
 # 建立一个基于CNN的人脸识别模型
 class Model(object):
-    FILE_PATH = "D:\\2022-Automated-test\\FaceRecognition\\model.keras"  # 模型进行存储和读取的地方
+    FILE_PATH = "/FaceRecognition/twopeoplemodel.h5"  # 模型进行存储和读取的地方
     IMAGE_SIZE = 128  # 模型接受的人脸图片是128*128的
 
     def __init__(self):
@@ -18,41 +21,48 @@ class Model(object):
     def read_trainData(self, dataset):
         self.dataset = dataset
 
-    # 建立一个CNN模型，一层卷积、一层池化、一层卷积、一层池化、抹平之后进行全链接、最后进行分类
+    # 建立一个CNN模型,抹平之后进行全链接、最后进行分类
     def build_model(self):
         self.model = Sequential()
-        self.model.add(Convolution2D(filters=32, kernel_size=(5, 5), padding='same', input_shape=self.dataset.X_train.shape[1:]))
 
+        self.model.add(Convolution2D(filters=32, kernel_size=(5, 5), padding='same', input_shape=self.dataset.X_train.shape[1:]))
         self.model.add(Activation('relu'))
-        self.model.add(
-            MaxPooling2D(
-                pool_size=(2, 2),
-                strides=(2, 2),
-                padding='same'
-            )
-        )
+        self.model.add(MaxPooling2D(pool_size=(2, 2),strides=(2, 2),padding='same'))
+        self.model.add(Dropout(0.3))
 
         self.model.add(Convolution2D(filters=64, kernel_size=(5, 5), padding='same'))
         self.model.add(Activation('relu'))
         self.model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+        self.model.add(Dropout(0.3))
+
+        self.model.add(Convolution2D(filters=64, kernel_size=(5, 5), padding='same'))
+        self.model.add(Activation('relu'))
+        self.model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+        self.model.add(Dropout(0.3))
+
+        self.model.add(Convolution2D(filters=64, kernel_size=(5, 5), padding='same'))
+        self.model.add(Activation('relu'))
+        self.model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+        self.model.add(Dropout(0.3))
 
         self.model.add(Flatten())
         self.model.add(Dense(512))
         self.model.add(Activation('relu'))
-
+        self.model.add(Dropout(0.3))
         self.model.add(Dense(self.dataset.num_classes))
         self.model.add(Activation('softmax'))
         self.model.summary()
 
     # 进行模型训练的函数，具体的optimizer、loss可以进行不同选择
     def train_model(self):
+        sgd=SGD(lr=0.01,decay=1e-6,momentum=0.9,nesterov=True)
         self.model.compile(
-            optimizer='adam',  # 有很多可选的optimizer，例如RMSprop,Adagrad
+            optimizer=sgd,  # 有很多可选的optimizer，例如adam,Adagrad
             loss='categorical_crossentropy',  # 你可以选用squared_hinge作为loss看看哪个好
             metrics=['accuracy'])
 
         # epochs、batch_size为可调的参数，epochs为训练多少轮、batch_size为每次训练多少个样本
-        self.model.fit(self.dataset.X_train, self.dataset.Y_train, epochs=7, batch_size=20)
+        self.model.fit(self.dataset.X_train, self.dataset.Y_train, epochs=20, batch_size=8)
 
     def evaluate_model(self):
         print('\nTesting---------------')
@@ -82,7 +92,7 @@ class Model(object):
 
 
 if __name__ == '__main__':
-    dataset = DataSet("D:\\2022-Automated-test\\FaceRecognition\\pictures")
+    dataset = DataSet("../pictures/3_classes_pins_dataset")
     model = Model()
     model.read_trainData(dataset)
     model.build_model()
