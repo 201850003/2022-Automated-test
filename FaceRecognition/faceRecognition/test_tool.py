@@ -25,6 +25,7 @@ def get_actual_res(name_list, actual_name_list):
     res = []
 
     for i in range(0, len(actual_name_list)):
+        # 正则匹配图片名称的第一个数字，切割后取第一部分
         one_actual_name = re.split(r'\d', actual_name_list[i])[0]
         if one_actual_name in name_list:
             res.append(one_actual_name)
@@ -45,9 +46,13 @@ def test_model(name_list, img_path, predict_threshold):
     img_list = read_img_list(img_path)
     for img in img_list:
         index, prob = model.predict(img)
-        res_name.append(name_list[index] if (index != -1 ) else 'not find')
-
-        res_prob.append(prob)
+        # 筛选预测概率过低的结果
+        if index != -1 and prob >= predict_threshold:
+            res_name.append(name_list[index])
+            res_prob.append(prob)
+        else:
+            res_name.append("not find")
+            res_prob.append(1)
 
     return res_name, res_prob
 
@@ -57,30 +62,34 @@ def eval_accuracy(test_list, actual_list, actual_name_list, prob_list, predict_t
     n_r = 0                     # 正确识别人脸的数量
     n_c = len(actual_list)      # 文件夹下图片总数
     not_find_list = []
-    print(test_list)
+
+    # print(test_list)
     for k in range(0, n_c):
-        # 不筛选测试结果，仅仅在对比结果与正确答案时用概率阈值过滤
-     if test_list[k] == actual_list[k] and prob_list[k] >= predict_threshold:
-        if test_list[k] == actual_list[k]:
-            n_r += 1
-        else:
-            not_find_list.append(actual_name_list[k])
+        # 此处不是筛选测试结果，只是在计算准确率时用概率阈值判断模型的预测能力
+        if test_list[k] == actual_list[k] and prob_list[k] >= predict_threshold:
+            if test_list[k] == actual_list[k]:
+                n_r += 1
+            else:
+                not_find_list.append(actual_name_list[k])
 
     rate = n_r/n_c
     output(rate, predict_threshold, not_find_list)
 
 
 # 规范输出格式
-def output(accuracy, predict_threshold, not_find_list):
-    if predict_threshold == 0:
-        print_line("=", 50, True)
-    else:
-        print_line("*", 50, True)
+def output(accuracy, predict_threshold1, predict_threshold2, not_find_list):
+    # 这四行代码用于从0开始多次计算时的格式化输出
+    # if predict_threshold == 0:
+    #     print_line("=", 50, True)
+    # else:
+    #     print_line("*", 50, True)
+    print_line("=", 50, True)
     print("The accuracy rate is: {:.2%}.".format(accuracy))
-    print("The prediction threshold is: {:.2f}".format(predict_threshold))
+    print("The prediction threshold for test result filter is: {:.2f}".format(predict_threshold2))
+    print("The prediction threshold for the accuracy calculation filter is: {:.2f}".format(predict_threshold1))
     print("The following is a list of images that identify errors: ")
     for not_find_name in not_find_list:
-        print(not_find_name)
+        print("     " + not_find_name)
     print()
 
 
@@ -88,13 +97,19 @@ if __name__ == '__main__':
     origin_img_path = '..\\pictures\\3_classes_pins_dataset'
     handle_img_path = '..\\pictures\\newdataset'
 
-    existing_name = handle_name_list(origin_img_path)   # 获取人脸识别库中已录入的人脸对应人名
-    actual_name = read_name_list(handle_img_path)       # 获取测试集中所有图片名称
-    actual_res = get_actual_res(existing_name, actual_name)                 # 获取人脸识别的标准答案
-    #test_res, test_res_prob = test_model(existing_name, handle_img_path, 0.7)    # 获取模型测试结果（其他人脸图片判断未命中准确率）
-    test_res, test_res_prob = test_model(existing_name, handle_img_path, 0)    #正常测试时用这行注掉上一行
-    #for j in np.arange(0, 1, 0.1):
+    # 获取正确答案
+    existing_name = handle_name_list(origin_img_path)           # 获取人脸识别库中已录入的人脸对应人名
+    actual_name = read_name_list(handle_img_path)               # 获取测试集中所有图片名称
+    actual_res = get_actual_res(existing_name, actual_name)     # 获取人脸识别的标准答案
+
+    # 设置概率阈值，获取测试结果
+    predict_threshold_1 = input("Please enter the probability threshold for test result filter: ")
+    test_res, test_res_prob = test_model(existing_name, handle_img_path, predict_threshold_1)
+
+    # 设置概率阈值，计算准确率
+    # for j in np.arange(0, 1, 0.1):
     #     eval_accuracy(test_res, actual_res, actual_name, test_res_prob, j)
-    eval_accuracy(test_res, actual_res, actual_name, test_res_prob, 0.5)
+    predict_threshold_2 = input("Please enter the probability threshold for the accuracy calculation filter: ")
+    eval_accuracy(test_res, actual_res, actual_name, test_res_prob, predict_threshold_2)
 
     print_line("=", 50, False)
