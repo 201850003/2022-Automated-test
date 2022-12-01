@@ -47,7 +47,7 @@ def test_model(name_list, img_path, predict_threshold):
     for img in img_list:
         index, prob = model.predict(img)
         # 筛选预测概率过低的结果
-        if index != -1 and prob >= predict_threshold:
+        if index != -1 and prob >= float(predict_threshold):
             res_name.append(name_list[index])
             res_prob.append(prob)
         else:
