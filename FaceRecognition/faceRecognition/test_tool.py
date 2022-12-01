@@ -58,7 +58,7 @@ def test_model(name_list, img_path, predict_threshold):
 
 
 # 计算准确率
-def eval_accuracy(test_list, actual_list, actual_name_list, prob_list, predict_threshold):
+def eval_accuracy(test_list, actual_list, actual_name_list, prob_list, predict_threshold1, predict_threshold2):
     n_r = 0                     # 正确识别人脸的数量
     n_c = len(actual_list)      # 文件夹下图片总数
     not_find_list = []
@@ -66,14 +66,14 @@ def eval_accuracy(test_list, actual_list, actual_name_list, prob_list, predict_t
     # print(test_list)
     for k in range(0, n_c):
         # 此处不是筛选测试结果，只是在计算准确率时用概率阈值判断模型的预测能力
-        if test_list[k] == actual_list[k] and prob_list[k] >= predict_threshold:
+        if test_list[k] == actual_list[k] and prob_list[k] >= predict_threshold2:
             if test_list[k] == actual_list[k]:
                 n_r += 1
             else:
                 not_find_list.append(actual_name_list[k])
 
     rate = n_r/n_c
-    output(rate, predict_threshold, not_find_list)
+    output(rate, predict_threshold1, predict_threshold2, not_find_list)
 
 
 # 规范输出格式
@@ -103,13 +103,13 @@ if __name__ == '__main__':
     actual_res = get_actual_res(existing_name, actual_name)     # 获取人脸识别的标准答案
 
     # 设置概率阈值，获取测试结果
-    predict_threshold_1 = input("Please enter the probability threshold for test result filter: ")
+    predict_threshold_1 = float(input("Please enter the probability threshold for test result filter: "))
     test_res, test_res_prob = test_model(existing_name, handle_img_path, predict_threshold_1)
 
     # 设置概率阈值，计算准确率
     # for j in np.arange(0, 1, 0.1):
     #     eval_accuracy(test_res, actual_res, actual_name, test_res_prob, j)
-    predict_threshold_2 = input("Please enter the probability threshold for the accuracy calculation filter: ")
-    eval_accuracy(test_res, actual_res, actual_name, test_res_prob, predict_threshold_2)
+    predict_threshold_2 = float(input("Please enter the probability threshold for the accuracy calculation filter: "))
+    eval_accuracy(test_res, actual_res, actual_name, test_res_prob, predict_threshold_1, predict_threshold_2)
 
     print_line("=", 50, False)
